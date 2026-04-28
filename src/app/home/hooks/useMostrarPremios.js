@@ -1,3 +1,4 @@
+// hooks/useMostrarPremios.js
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
@@ -10,7 +11,23 @@ export function useMostrarPremios() {
     const fetchPremios = async () => {
       try {
         setLoading(true)
-        
+        console.log('1. Iniciando fetch de premios...')
+
+        // Verificar conexión a Supabase
+        console.log('2. Supabase cliente:', supabase ? 'Inicializado' : 'No inicializado')
+
+        // Prueba simple de conexión
+        const { data: testData, error: testError } = await supabase
+          .from('premios')
+          .select('count')
+
+        console.log('3. Prueba de conexión:', testError ? 'Error' : 'Exitosa', testError?.message)
+
+        // Si hay error de conexión, mostrar específicamente
+        if (testError) {
+          throw new Error(`Error de conexión a Supabase: ${testError.message}`)
+        }
+
         // Obtener premios con la información de categoría
         const { data, error: supabaseError } = await supabase
           .from('premios')
@@ -21,14 +38,21 @@ export function useMostrarPremios() {
               nombre
             )
           `)
-          .eq('disponible', true) // Solo premios disponibles
-          .order('puntos_equivalentes', { ascending: true }) // Ordenar por puntos
-          // .limit(10) // Opcional: limitar resultados
-        
-        if (supabaseError) throw supabaseError
-        
+          .eq('disponible', true)
+          .order('puntos_equivalentes', { ascending: true })
+
+        console.log('4. Resultado consulta:', {
+          dataLength: data?.length,
+          error: supabaseError,
+          supabaseErrorMsg: supabaseError?.message
+        })
+
+        if (supabaseError) {
+          console.error('5. Error de Supabase:', supabaseError)
+          throw new Error(`Error en consulta: ${supabaseError.message}`)
+        }
+
         if (data && data.length > 0) {
-          // Formatear los datos
           const premiosFormateados = data.map(premio => ({
             id: premio.id,
             nombre: premio.nombre,
@@ -40,19 +64,22 @@ export function useMostrarPremios() {
             categoria: premio.categorias_premios?.nombre || 'Sin categoría',
             categoria_id: premio.categoria_id
           }))
-          
+
           setPremios(premiosFormateados)
-          console.log('Premios cargados:', premiosFormateados.length)
+          console.log('6. Premios cargados exitosamente:', premiosFormateados.length)
         } else {
-          console.log('No hay premios en la base de datos')
+          console.log('7. No hay premios en la base de datos')
           setPremios([])
         }
-        
+
       } catch (err) {
-        console.error('Error al cargar premios:', err)
-        setError(err.message)
+        console.error('8. Error capturado:', err)
+        console.error('8a. Mensaje:', err.message)
+        console.error('8b. Stack:', err.stack)
+        setError(err.message || 'Error desconocido al cargar premios')
       } finally {
         setLoading(false)
+        console.log('9. Loading establecido a false')
       }
     }
 

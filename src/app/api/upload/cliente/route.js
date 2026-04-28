@@ -11,7 +11,7 @@ export async function POST(request) {
     try {
         const formData = await request.formData()
         const file = formData.get('file')
-        const folder = formData.get('folder') || 'clientes'
+        const folder = formData.get('clientes')
 
         if (!file) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
