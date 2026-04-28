@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
 
+// Verificar que las variables de entorno existan
+if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+    throw new Error('Missing Cloudinary configuration')
+}
+
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -11,7 +16,7 @@ export async function POST(request) {
     try {
         const formData = await request.formData()
         const file = formData.get('file')
-        const folder = formData.get('clientes')
+        const folder = formData.get('clientes') || 'clientes' // Valor por defecto
 
         if (!file) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
