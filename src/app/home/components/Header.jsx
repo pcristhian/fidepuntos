@@ -15,7 +15,7 @@ export default function Header() {
         { name: "Servicios", href: "/servicios" },
         { name: "Productos", href: "/productos" },
         { name: "Nosotros", href: "/nosotros" },
-        { name: "Iniciar Sesión", href: "login" },
+        { name: "Iniciar Sesión", href: "/Login" },
     ];
 
     return (
@@ -27,7 +27,6 @@ export default function Header() {
                     <Link href="/" className="text-white text-2xl font-bold">
                         Fide Puntos
                     </Link>
-
                     {/* Botón hamburguesa */}
                     <button
                         onClick={toggleMenu}
